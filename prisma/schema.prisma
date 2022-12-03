@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Site {
+  siteName  String @id @unique
+  lanes Lane[]
+}
+
+model Lane {
+  laneName  String
+  siteName   String
+  screenshot_url   String
+  site      Site      @relation(fields: [siteName], references: [siteName])
+  versions  Version[]
+
+  @@unique([siteName, laneName])
+}
+
+model Version {
+  package String
+  version String
+  laneName String
+  lane    Lane    @relation(fields: [siteName, laneName], references: [siteName, laneName])
+  siteName String
+
+  @@id([siteName, laneName, package])
+}
